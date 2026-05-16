@@ -5,11 +5,40 @@ document.addEventListener('DOMContentLoaded', () => {
     const taskList = document.getElementById('taskList');
     const filterBtns = document.querySelectorAll('.filter-btn');
 
+    // Stats Elements
+    const userLevelEl = document.getElementById('userLevel');
+    const userGoldEl = document.getElementById('userGold');
+    const xpBar = document.getElementById('xpBar');
+    const currentXPEl = document.getElementById('currentXP');
+    const nextLevelXPEl = document.getElementById('nextLevelXP');
+    const levelUpModal = document.getElementById('level-up-modal');
+    const closeModalBtn = document.getElementById('closeModal');
+
     let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    let stats = JSON.parse(localStorage.getItem('userStats')) || {
+        level: 1,
+        xp: 0,
+        gold: 0
+    };
     let currentFilter = 'all';
 
-    const saveTasks = () => {
+    const saveAll = () => {
         localStorage.setItem('tasks', JSON.stringify(tasks));
+        localStorage.setItem('userStats', JSON.stringify(stats));
+    };
+
+    const getXPForNextLevel = (level) => level * 100;
+
+    const updateStatsUI = () => {
+        userLevelEl.textContent = stats.level;
+        userGoldEl.textContent = stats.gold;
+        
+        const nextXP = getXPForNextLevel(stats.level);
+        const xpPercent = (stats.xp / nextXP) * 100;
+        
+        xpBar.style.width = `${xpPercent}%`;
+        currentXPEl.textContent = stats.xp;
+        nextLevelXPEl.textContent = nextXP;
     };
 
     const renderTasks = () => {
@@ -57,22 +86,62 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         tasks.push(newTask);
-        saveTasks();
+        saveAll();
         renderTasks();
         taskInput.value = '';
+        
+        // Visual feedback
+        document.querySelector('.app-container').classList.add('shake');
+        setTimeout(() => document.querySelector('.app-container').classList.remove('shake'), 500);
     };
 
     const toggleTask = (id) => {
-        tasks = tasks.map(task => 
-            task.id === id ? { ...task, completed: !task.completed } : task
-        );
-        saveTasks();
+        const taskIndex = tasks.findIndex(t => t.id === id);
+        if (taskIndex === -1) return;
+
+        const task = tasks[taskIndex];
+        const wasCompleted = task.completed;
+        task.completed = !wasCompleted;
+
+        // Reward only when checking as complete
+        if (!wasCompleted && task.completed) {
+            awardRewards(task.priority);
+        }
+
+        saveAll();
         renderTasks();
+    };
+
+    const awardRewards = (priority) => {
+        let xpGain = 10;
+        let goldGain = 5;
+
+        if (priority === 'medium') { xpGain = 20; goldGain = 15; }
+        if (priority === 'high') { xpGain = 50; goldGain = 40; }
+
+        stats.xp += xpGain;
+        stats.gold += goldGain;
+
+        checkLevelUp();
+        updateStatsUI();
+    };
+
+    const checkLevelUp = () => {
+        const nextXP = getXPForNextLevel(stats.level);
+        if (stats.xp >= nextXP) {
+            stats.xp -= nextXP;
+            stats.level++;
+            showLevelUp();
+        }
+    };
+
+    const showLevelUp = () => {
+        levelUpModal.classList.remove('hidden');
     };
 
     const deleteTask = (id) => {
         tasks = tasks.filter(task => task.id !== id);
-        saveTasks();
+        saveAll();
         renderTasks();
     };
 
@@ -99,5 +168,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    closeModalBtn.addEventListener('click', () => {
+        levelUpModal.classList.add('hidden');
+    });
+
+    updateStatsUI();
     renderTasks();
 });
