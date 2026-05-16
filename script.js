@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             li.innerHTML = `
                 <div class="task-info">
-                    <input type="checkbox" ${task.completed ? 'checked' : ''} data-id="${task.id}">
+                    <input type="checkbox" ${task.completed ? 'checked disabled' : ''} data-id="${task.id}">
                     <svg class="icon task-item-icon"><use xlink:href="#icon-scroll"></use></svg>
                     <span class="task-text">${escapeHtml(task.text)}</span>
                 </div>
@@ -161,14 +161,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (taskIndex === -1) return;
 
         const task = tasks[taskIndex];
-        const wasCompleted = task.completed;
-        task.completed = !wasCompleted;
+        if (task.completed) return; // Once completed, it stays completed
 
-        // Reward only when checking as complete
-        if (!wasCompleted && task.completed) {
-            sfx.questComplete();
-            awardRewards(task.priority);
-        }
+        task.completed = true;
+        sfx.questComplete();
+        awardRewards(task.priority);
 
         saveAll();
         renderTasks();
