@@ -57,9 +57,12 @@ document.addEventListener('DOMContentLoaded', () => {
             li.innerHTML = `
                 <div class="task-info">
                     <input type="checkbox" ${task.completed ? 'checked' : ''} data-id="${task.id}">
+                    <svg class="icon task-item-icon"><use xlink:href="#icon-scroll"></use></svg>
                     <span class="task-text">${escapeHtml(task.text)}</span>
                 </div>
-                <button class="delete-btn" data-id="${task.id}">&times;</button>
+                <button class="delete-btn" data-id="${task.id}">
+                    <svg class="icon"><use xlink:href="#icon-skull"></use></svg>
+                </button>
             `;
 
             const checkbox = li.querySelector('input[type="checkbox"]');
@@ -91,8 +94,9 @@ document.addEventListener('DOMContentLoaded', () => {
         taskInput.value = '';
         
         // Visual feedback
-        document.querySelector('.app-container').classList.add('shake');
-        setTimeout(() => document.querySelector('.app-container').classList.remove('shake'), 500);
+        const container = document.querySelector('.app-container');
+        container.classList.add('shake');
+        setTimeout(() => container.classList.remove('shake'), 500);
     };
 
     const toggleTask = (id) => {
