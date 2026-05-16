@@ -1,0 +1,182 @@
+:root {
+    --bg-color: #121212;
+    --container-bg: #1e1e1e;
+    --text-color: #e0e0e0;
+    --accent-blue: #00d4ff;
+    --accent-green: #39ff14;
+    --accent-red: #ff3131;
+    --accent-orange: #ff9100;
+    --border-color: #333;
+    --card-bg: #2a2a2a;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 500px;
+    background-color: var(--container-bg);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 10px var(--accent-blue);
+}
+
+header h1 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--accent-blue);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px var(--accent-blue);
+}
+
+.input-section {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+input[type="text"] {
+    flex: 1;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: white;
+    padding: 0.8rem;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+input[type="text"]:focus {
+    border-color: var(--accent-blue);
+}
+
+select {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: white;
+    padding: 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button#addTaskBtn {
+    background: var(--accent-blue);
+    border: none;
+    color: black;
+    padding: 0.8rem 1.2rem;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.3s;
+}
+
+button#addTaskBtn:hover {
+    transform: translateY(-2px);
+    background: #00b8e6;
+}
+
+.filter-section {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+}
+
+.filter-btn {
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0.3rem 0.6rem;
+    transition: color 0.3s;
+}
+
+.filter-btn.active {
+    color: var(--accent-blue);
+    font-weight: bold;
+    border-bottom: 2px solid var(--accent-blue);
+}
+
+.task-list {
+    list-style: none;
+}
+
+.task-item {
+    background: var(--card-bg);
+    margin-bottom: 0.8rem;
+    padding: 1rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: transform 0.2s;
+    border-left: 4px solid var(--border-color);
+}
+
+.task-item:hover {
+    transform: scale(1.02);
+}
+
+.task-item.priority-high { border-left-color: var(--accent-red); }
+.task-item.priority-medium { border-left-color: var(--accent-orange); }
+.task-item.priority-low { border-left-color: var(--accent-green); }
+
+.task-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.task-text {
+    font-size: 1rem;
+}
+
+.task-item.completed .task-text {
+    text-decoration: line-through;
+    color: #666;
+}
+
+input[type="checkbox"] {
+    width: 1.2rem;
+    height: 1.2rem;
+    cursor: pointer;
+    accent-color: var(--accent-green);
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    color: #ff4d4d;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0.2rem;
+    transition: color 0.3s;
+}
+
+.delete-btn:hover {
+    color: #ff0000;
+}
+
+@media (max-width: 480px) {
+    .input-section {
+        flex-direction: column;
+    }
+}

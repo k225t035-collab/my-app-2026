@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Master - Modern Dark</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Task Master</h1>
+        </header>
+
+        <section class="input-section">
+            <input type="text" id="taskInput" placeholder="新しいタスクを入力..." aria-label="タスク名">
+            <select id="prioritySelect" aria-label="優先度">
+                <option value="low">低</option>
+                <option value="medium" selected>中</option>
+                <option value="high">高</option>
+            </select>
+            <button id="addTaskBtn">追加</button>
+        </section>
+
+        <section class="filter-section">
+            <button class="filter-btn active" data-filter="all">すべて</button>
+            <button class="filter-btn" data-filter="active">未完了</button>
+            <button class="filter-btn" data-filter="completed">完了済み</button>
+        </section>
+
+        <ul id="taskList" class="task-list">
+            <!-- タスクがここに追加されます -->
+        </ul>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
