@@ -13,6 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const nextLevelXPEl = document.getElementById('nextLevelXP');
     const levelUpModal = document.getElementById('level-up-modal');
     const closeModalBtn = document.getElementById('closeModal');
+    const bgm = document.getElementById('bgm');
+    const musicToggle = document.getElementById('musicToggle');
 
     let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
     let stats = JSON.parse(localStorage.getItem('userStats')) || {
@@ -21,7 +23,61 @@ document.addEventListener('DOMContentLoaded', () => {
         gold: 0
     };
     let currentFilter = 'all';
+    let isMuted = true;
 
+    // --- Audio System (Web Audio API) ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    const playSound = (freq, type, duration, vol = 0.1) => {
+        if (isMuted) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+    };
+
+    const sfx = {
+        questAdd: () => {
+            playSound(440, 'sawtooth', 0.1);
+            setTimeout(() => playSound(880, 'sawtooth', 0.2), 50);
+        },
+        questComplete: () => {
+            playSound(523.25, 'sine', 0.2); // C5
+            setTimeout(() => playSound(659.25, 'sine', 0.2), 100); // E5
+            setTimeout(() => playSound(783.99, 'sine', 0.4), 200); // G5
+        },
+        levelUp: () => {
+            const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+            notes.forEach((f, i) => {
+                setTimeout(() => playSound(f, 'square', 0.5, 0.05), i * 150);
+            });
+        },
+        delete: () => {
+            playSound(150, 'triangle', 0.2, 0.2);
+        }
+    };
+
+    const toggleMusic = () => {
+        isMuted = !isMuted;
+        if (isMuted) {
+            bgm.pause();
+            musicToggle.innerHTML = '<svg class="icon"><use xlink:href="#icon-volume-off"></use></svg>';
+        } else {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            bgm.play().catch(e => console.log("BGM play blocked"));
+            musicToggle.innerHTML = '<svg class="icon"><use xlink:href="#icon-volume-on"></use></svg>';
+        }
+    };
+
+    musicToggle.addEventListener('click', toggleMusic);
+
+    // --- Core Logic ---
     const saveAll = () => {
         localStorage.setItem('tasks', JSON.stringify(tasks));
         localStorage.setItem('userStats', JSON.stringify(stats));
@@ -93,7 +149,8 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTasks();
         taskInput.value = '';
         
-        // Visual feedback
+        // Visual & Audio feedback
+        sfx.questAdd();
         const container = document.querySelector('.app-container');
         container.classList.add('shake');
         setTimeout(() => container.classList.remove('shake'), 500);
@@ -109,6 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Reward only when checking as complete
         if (!wasCompleted && task.completed) {
+            sfx.questComplete();
             awardRewards(task.priority);
         }
 
@@ -140,10 +198,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const showLevelUp = () => {
+        sfx.levelUp();
         levelUpModal.classList.remove('hidden');
     };
 
     const deleteTask = (id) => {
+        sfx.delete();
         tasks = tasks.filter(task => task.id !== id);
         saveAll();
         renderTasks();

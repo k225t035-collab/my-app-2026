@@ -61,6 +61,31 @@ body {
     border: 1px solid var(--border-gold);
 }
 
+.controls-box {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.icon-btn {
+    background: none;
+    border: 1px solid var(--border-gold);
+    color: var(--gold);
+    padding: 0.4rem;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.icon-btn:hover {
+    background: var(--border-gold);
+    color: black;
+    box-shadow: 0 0 10px var(--gold);
+}
+
 .stat-item {
     display: flex;
     align-items: center;
